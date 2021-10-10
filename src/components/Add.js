@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
-import { withRouter } from 'react-router-dom';
+import { withRouter } from "react-router-dom";
 //MUI
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
@@ -25,7 +25,7 @@ class Add extends React.Component {
 			moviesIds: [],
 			displayForm: true,
 			showAlert: false,
-			redirect: false
+			redirect: false,
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
@@ -69,7 +69,7 @@ class Add extends React.Component {
 			year: parseInt(movie.release_date.split("-")[0]),
 			rating: parseInt(parseFloat(movie.vote_average) * 10),
 		};
-		
+
 		if (!this.state.moviesIds.includes(movie.id)) {
 			// we can add movie to database
 			axios.post("http://localhost:5000/user", params).then((data) => {
@@ -130,7 +130,9 @@ class Add extends React.Component {
 						{this.state.movies.map((movie) => (
 							<Grid item lg={4} sm={6} xs={12} key={movie.id}>
 								<Card sx={{ width: "auto", minHeight: 400 }}>
-									<CardActionArea onClick={() => this.addMovie(movie)}>
+									<CardActionArea
+										onClick={() => this.addMovie(movie)}
+									>
 										<CardMedia
 											component="img"
 											height="200"
@@ -165,9 +167,17 @@ class Add extends React.Component {
 				{
 					// alert for when movie is already added
 				}
-				<Snackbar open={this.state.showAlert} autoHideDuration={6000} onClose={() => this.setState({showAlert: false})}>
-					<Alert onClose={() => this.setState({showAlert: false})} severity="error" sx={{width: '100%'}}>
-						This movie is already in your portfolio
+				<Snackbar
+					open={this.state.showAlert}
+					autoHideDuration={6000}
+					onClose={() => this.setState({ showAlert: false })}
+				>
+					<Alert
+						onClose={() => this.setState({ showAlert: false })}
+						severity="error"
+						sx={{ width: "100%" }}
+					>
+						You already have this movie in your portfolio
 					</Alert>
 				</Snackbar>
 			</Stack>
