@@ -56,7 +56,13 @@ class Add extends React.Component {
 				},
 			})
 			.then((data) => {
-				this.setState({ moviesIds: data.data.movies });
+				if (data.data.code == 104) {
+					this.setState({ moviesIds: data.data.movies });	
+				} else {
+					console.log("Backend error");
+					console.log("Error: " + data.data.code + " - " + data.data.errno);
+				}
+				
 			});
 	}
 
