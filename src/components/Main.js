@@ -35,7 +35,7 @@ class Main extends Component {
 					this.setState({ movies: moviesNew });
 				} else {
 					console.log("Backend error")
-					console.log("Error code" + data.data.code + data.data.errno)
+					console.log("Error code" + data.data.code + " - " + data.data.errno)
 				}
 			})
 			.catch(function (error) {
