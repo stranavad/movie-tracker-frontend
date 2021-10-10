@@ -5,13 +5,15 @@ import PropTypes from "prop-types";
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import { Button, CardActionArea } from "@mui/material";
+// Alert components
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 class Add extends React.Component {
 	constructor(props) {
@@ -21,6 +23,7 @@ class Add extends React.Component {
 			movies: [],
 			moviesIds: [],
 			displayForm: true,
+			showAlert: false
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
@@ -71,7 +74,7 @@ class Add extends React.Component {
 				console.log(data.data.message);
 			});
 		} else {
-			// movie is already in database
+			this.setState({ showAlert: true });
 			console.log("Movie is already in DB");
 		}
 	}
@@ -156,6 +159,14 @@ class Add extends React.Component {
 						))}
 					</Grid>
 				)}
+				{
+					// alert for when movie is already added
+				}
+				<Snackbar open={this.state.showAlert} autoHideDuration={6000} onClose={() => this.setState({showAlert: false})}>
+					<Alert onClose={() => this.setState({showAlert: false})} severity="error" sx={{width: '100%'}}>
+						This movie is already in your portfolio
+					</Alert>
+				</Snackbar>
 			</Stack>
 		);
 	}
