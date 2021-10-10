@@ -24,7 +24,7 @@ class Main extends Component {
 			})
 			.then((data) => {
 				console.log(data.data);
-				if (data.data.message === "data") {
+				if (data.data.code === 104) {
 					let moviesNew = [];
 					for (const property in data.data.movies) {
 						moviesNew.push({
