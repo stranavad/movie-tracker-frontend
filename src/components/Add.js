@@ -26,6 +26,9 @@ class Add extends React.Component {
 			displayForm: true,
 			showAlert: false,
 			redirect: false,
+			alertText: "",
+			alertMovieAlready: "You already have this movie in your portfolio",
+			alertServerError: "There was some error-5xx, try again in few minutes"
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
@@ -88,11 +91,16 @@ class Add extends React.Component {
 					console.log(
 						"Error: " + data.data.code + " - " + data.data.errno
 					);
+					this.setState({
+						showAlert: true,
+						alertSeverity: "error",
+						alertText: this.state.alertServerError,
+					});
 				}
 			});
 			this.props.history.push("/");
 		} else {
-			this.setState({ showAlert: true });
+			this.setState({ showAlert: true, alertSeverity: "error", alertText: this.state.alertMovieAlready });
 			console.log("Movie is already in DB");
 		}
 	}
@@ -179,9 +187,6 @@ class Add extends React.Component {
 						))}
 					</Grid>
 				)}
-				{
-					// alert for when movie is already added
-				}
 				<Snackbar
 					open={this.state.showAlert}
 					autoHideDuration={6000}
@@ -189,10 +194,10 @@ class Add extends React.Component {
 				>
 					<Alert
 						onClose={() => this.setState({ showAlert: false })}
-						severity="error"
+						severity={this.state.alertSeverity}
 						sx={{ width: "100%" }}
 					>
-						This movie is already in your portfolio
+						{this.state.alertText}
 					</Alert>
 				</Snackbar>
 			</Stack>
