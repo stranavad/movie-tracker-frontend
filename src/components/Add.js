@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { withRouter } from 'react-router-dom';
 //MUI
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
@@ -23,7 +24,8 @@ class Add extends React.Component {
 			movies: [],
 			moviesIds: [],
 			displayForm: true,
-			showAlert: false
+			showAlert: false,
+			redirect: false
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
@@ -73,6 +75,7 @@ class Add extends React.Component {
 			axios.post("http://localhost:5000/user", params).then((data) => {
 				console.log(data.data.message);
 			});
+			this.props.history.push("/");
 		} else {
 			this.setState({ showAlert: true });
 			console.log("Movie is already in DB");
@@ -176,4 +179,4 @@ Add.propTypes = {
 	user: PropTypes.object.isRequired,
 };
 
-export default Add;
+export default withRouter(Add);
