@@ -113,7 +113,7 @@ class Add extends React.Component {
 						{this.state.movies.map((movie) => (
 							<Grid item lg={4} sm={6} xs={12} key={movie.id}>
 								<Card sx={{ width: "auto", minHeight: 400 }}>
-									<CardActionArea onClick={this.addMovie}>
+									<CardActionArea onClick={() => this.addMovie(movie)}>
 										<CardMedia
 											component="img"
 											height="200"
