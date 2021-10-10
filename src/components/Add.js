@@ -11,7 +11,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import { Button, CardActionArea, CardActions } from "@mui/material";
+import { Button, CardActionArea } from "@mui/material";
 
 class Add extends React.Component {
 	constructor(props) {
@@ -19,6 +19,7 @@ class Add extends React.Component {
 		this.state = {
 			movieName: "",
 			movies: [],
+			moviesIds: [],
 			displayForm: true,
 		};
 		this.onSubmit = this.onSubmit.bind(this);
@@ -42,6 +43,18 @@ class Add extends React.Component {
 		this.setState({ movieName: "", displayForm: false });
 	}
 
+	componentDidMount() {
+		axios
+			.get("http://localhost:5000/user/moviesids", {
+				params: {
+					id: this.props.user.uid,
+				},
+			})
+			.then((data) => {
+				this.setState({ moviesIds: data.data.movies });
+			});
+	}
+
 	addMovie(movie) {
 		const params = {
 			id: this.props.user.uid,
@@ -51,18 +64,16 @@ class Add extends React.Component {
 			year: parseInt(movie.release_date.split("-")[0]),
 			rating: parseInt(parseFloat(movie.vote_average) * 10),
 		};
-		axios.post("http://localhost:5000/user", params).then((data) => {
-			console.log(data.data.message);
-		});
-		let moviesNew = this.state.movies;
-		moviesNew.unshift({
-			id: parseInt(movie.id),
-			title: movie.title,
-			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
-			year: parseInt(movie.release_date.split("-")[0]),
-			rating: parseInt(parseFloat(movie.vote_average) * 10),
-		});
-		this.setState({ movies: moviesNew });
+		
+		if (!this.state.moviesIds.includes(movie.id)) {
+			// we can add movie to database
+			axios.post("http://localhost:5000/user", params).then((data) => {
+				console.log(data.data.message);
+			});
+		} else {
+			// movie is already in database
+			console.log("Movie is already in DB");
+		}
 	}
 
 	render() {
