@@ -26,6 +26,9 @@ class Add extends React.Component {
 			displayForm: true,
 			showAlert: false,
 			redirect: false,
+			alertText: "",
+			alertMovieAlready: "You already have this movie in your portfolio",
+			alertServerError: "There was some error-5xx, try again in few minutes"
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
@@ -56,7 +59,14 @@ class Add extends React.Component {
 				},
 			})
 			.then((data) => {
-				this.setState({ moviesIds: data.data.movies });
+				if (data.data.code == 104) {
+					this.setState({ moviesIds: data.data.movies });
+				} else {
+					console.log("Backend error");
+					console.log(
+						"Error: " + data.data.code + " - " + data.data.errno
+					);
+				}
 			});
 	}
 
@@ -73,11 +83,24 @@ class Add extends React.Component {
 		if (!this.state.moviesIds.includes(movie.id)) {
 			// we can add movie to database
 			axios.post("http://localhost:5000/user", params).then((data) => {
-				console.log(data.data.message);
+				if (data.data.code == 112) {
+					// success alert
+					console.log("success alert");
+				} else {
+					console.log("Backend error");
+					console.log(
+						"Error: " + data.data.code + " - " + data.data.errno
+					);
+					this.setState({
+						showAlert: true,
+						alertSeverity: "error",
+						alertText: this.state.alertServerError,
+					});
+				}
 			});
 			this.props.history.push("/");
 		} else {
-			this.setState({ showAlert: true });
+			this.setState({ showAlert: true, alertSeverity: "error", alertText: this.state.alertMovieAlready });
 			console.log("Movie is already in DB");
 		}
 	}
@@ -174,10 +197,10 @@ class Add extends React.Component {
 				>
 					<Alert
 						onClose={() => this.setState({ showAlert: false })}
-						severity="error"
+						severity={this.state.alertSeverity}
 						sx={{ width: "100%" }}
 					>
-						You already have this movie in your portfolio
+						{this.state.alertText}
 					</Alert>
 				</Snackbar>
 			</Stack>
