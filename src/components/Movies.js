@@ -11,7 +11,7 @@ import { Button, CardActions } from "@mui/material";
 function Movies(props) {
 	return (
 		<Stack spacing={4} alignItems="center">
-			<Grid container spacing={2} sx={{ maxWidth: 1200 }}>
+			<Grid container spacing={2} sx={{ maxWidth: 1200, paddingTop: 50 }}>
 				{props.movies.map((movie) => (
 					<Grid item lg={4} sm={6} xs={12} key={movie.id}>
 						<Card sx={{ width: "auto", minHeight: 400 }}>
@@ -42,7 +42,7 @@ function Movies(props) {
 									size="small"
 									color="primary"
 									onClick={() =>
-										console.log("Removing movie" + movie.id)
+										props.deleteMovie(movie)
 									}
 								>
 									Remove

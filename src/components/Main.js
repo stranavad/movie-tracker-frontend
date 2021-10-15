@@ -11,8 +11,17 @@ class Main extends Component {
 		};
   }
 
-	removeMovie = (id) => {
-		console.log("Removing movie" + id);
+	removeMovie = (movie) => {
+		axios.delete("http://localhost:5000/user",
+			{
+				params: {
+					id: this.props.user.uid,
+					movie_id: movie.movie_table_id,
+			}
+			}).then((data) => {
+				console.log(data.data.code)
+				console.log(data.data.errno)
+		})
 	};
 
 	componentDidMount() {
@@ -48,7 +57,7 @@ class Main extends Component {
 			<div>
 				<Movies
 					movies={this.state.movies}
-					removeMovie={this.removeMovie}
+					deleteMovie={this.removeMovie}
 				/>
 			</div>
 		);
