@@ -59,7 +59,7 @@ class Add extends React.Component {
 				},
 			})
 			.then((data) => {
-				if (data.data.code == 104) {
+				if (data.data.code === 104) {
 					this.setState({ moviesIds: data.data.movies });
 				} else {
 					console.log("Backend error");
@@ -74,16 +74,16 @@ class Add extends React.Component {
 		const params = {
 			id: this.props.user.uid,
 			title: movie.title,
-			movie_id: parseInt(movie.id),
+			movie_id: parseInt(movie.id, 10),
 			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
-			year: parseInt(movie.release_date.split("-")[0]),
-			rating: parseInt(parseFloat(movie.vote_average) * 10),
+			year: parseInt(movie.release_date.split("-")[0], 10),
+			rating: parseInt(parseFloat(movie.vote_average) * 10, 10),
 		};
 
 		if (!this.state.moviesIds.includes(movie.id)) {
 			// we can add movie to database
 			axios.post("http://localhost:5000/user", params).then((data) => {
-				if (data.data.code == 112) {
+				if (data.data.code === 112) {
 					// success alert
 					console.log("success alert");
 				} else {

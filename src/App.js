@@ -5,8 +5,6 @@ import Menu from "./components/Menu";
 import Add from "./components/Add";
 // Material UI
 import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
 
 // Router
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -25,6 +23,8 @@ const firebaseConfig = {
 	messagingSenderId: "793966122239",
 	appId: "1:793966122239:web:8216845748ff45ee5468ca",
 };
+
+// eslint-disable-next-line no-unused-vars
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 // End of Firebase configuration
@@ -65,10 +65,11 @@ export const signInWithGoogle = () => {
 	let provider = new GoogleAuthProvider();
 	signInWithPopup(auth, provider)
 		.then((result) => {
+			// eslint-disable-next-line no-unused-vars
 			const credential = GoogleAuthProvider.credentialFromResult(result);
 			//const token = credential.accessToken;
+			// eslint-disable-next-line no-unused-vars
 			const user = result.user;
-			console.log(user);
 		})
 		.catch((error) => {
 			// const errorCode = error.code;
