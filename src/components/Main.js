@@ -19,8 +19,14 @@ class Main extends Component {
 					movie_id: movie.movie_table_id,
 			}
 			}).then((data) => {
+				// error codes from backend
 				console.log(data.data.code)
-				console.log(data.data.errno)
+				// removing movie from state
+				for (let i = 0; i < this.state.movies.length; i++) {
+					if (this.state.movies[i].movie_table_id === movie.movie_table_id) {
+						this.setState({ movies: this.state.movies.splice(i, 1) });
+					}
+				}
 		})
 	};
 
@@ -69,3 +75,4 @@ Main.propTypes = {
 };
 
 export default Main;
+
