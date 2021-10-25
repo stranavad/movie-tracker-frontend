@@ -12,6 +12,9 @@ import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import { Button, CardActionArea } from "@mui/material";
+import Fab from "@mui/material/Fab";
+import CloseIcon from "@mui/icons-material/Close";
+import BackspaceIcon from "@mui/icons-material/Backspace";
 // Alert components
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -34,6 +37,7 @@ class Add extends React.Component {
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
+		this.cleanSearch = this.cleanSearch.bind(this);
 	}
 
 	onSubmit(e) {
@@ -68,6 +72,7 @@ class Add extends React.Component {
 						showAlert: true,
 						alertSeverity: "error",
 						alertText: this.state.alertNoMoviesError,
+						displayForm: true
 					});
 				}
 			});
@@ -93,6 +98,10 @@ class Add extends React.Component {
 			});
 	}
 
+	cleanSearch() {
+		this.setState({movies: [], movieName: "", displayForm: true})
+	}
+
 	addMovie(movie) {
 		const params = {
 			id: this.props.user.uid,
@@ -106,6 +115,14 @@ class Add extends React.Component {
 			if (data.data.code === 112) {
 				// success alert
 				console.log("success alert");
+				// remove movie from list
+				let newMovies = this.state.movies;
+				for (let i = 0; i < newMovies.length; i++) {
+					if (newMovies[i].id === movie.id) {
+						newMovies.splice(i, 1);
+					}
+				}
+				this.setState({ movies: newMovies });
 			} else {
 				console.log("Backend error");
 				console.log(
@@ -118,7 +135,9 @@ class Add extends React.Component {
 				});
 			}
 		});
-		this.props.history.push("/");
+
+		// dont redirect
+		//this.props.history.push("/");
 	}
 
 	render() {
@@ -230,6 +249,22 @@ class Add extends React.Component {
 						{this.state.alertText}
 					</Alert>
 				</Snackbar>
+				<Box sx={{ position: "fixed", right: 50, bottom: 50 }}>
+					<a href="/">
+						<Fab color="primary" aria-label="add">
+							<CloseIcon />
+						</Fab>
+					</a>
+				</Box>
+				<Box sx={{ position: "fixed", right: 50, bottom: 120 }}>
+					<Fab
+						color="primary"
+						aria-label="add"
+						onClick={this.cleanSearch}
+					>
+						<BackspaceIcon />
+					</Fab>
+				</Box>
 			</Stack>
 		);
 	}

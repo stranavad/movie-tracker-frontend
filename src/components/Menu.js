@@ -28,13 +28,6 @@ export default function Menu(props) {
           )}
         </Toolbar>
       </AppBar>
-      <Box sx={{ position: "fixed", right: 50, bottom: 50 }}>
-        <a href="/add">
-          <Fab color="primary" aria-label="add">
-            <AddIcon/>
-          </Fab>
-        </a>
-      </Box>
     </Box>
   );
 }
