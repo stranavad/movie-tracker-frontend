@@ -53,6 +53,7 @@ class Add extends React.Component {
 			.then((data) => {
 				if (data.data.results.length !== 0) {
 					console.log("running in main");
+					// not show movies, that are already added in portfolio
 					let pushMovies = [];
 					for (let i = 0; i < data.data.results.length; i++) {
 						if (
