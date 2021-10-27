@@ -104,6 +104,24 @@ class Add extends React.Component {
 	}
 
 	addMovie(movie) {
+		//get more data from tmdb
+		let genres = [];
+		axios
+			.get(
+				"https://api.themoviedb.org/3/movie/" +
+					parseInt(this.props.movie_id, 10),
+				{
+					params: {
+						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
+					},
+				}
+			)
+			.then((req) => {
+				for (let i = 1; i < req.data.genres.length; i++){
+					genres.push(req.data.genres[i].name);
+				}
+			});
+		
 		const params = {
 			id: this.props.user.uid,
 			title: movie.title,
@@ -111,6 +129,8 @@ class Add extends React.Component {
 			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
 			year: parseInt(movie.release_date.split("-")[0], 10),
 			rating: parseInt(parseFloat(movie.vote_average) * 10, 10),
+			overview: movie.overview,
+			genres: genres,
 		};
 		axios.post("http://localhost:5000/user", params).then((data) => {
 			if (data.data.code === 112) {
