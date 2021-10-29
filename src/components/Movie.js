@@ -11,27 +11,12 @@ class Movie extends React.Component {
 	}
 
 	componentDidMount() {
-		// get data from tmdb
-		console.log("movie: " + this.props.movie_id);
-		axios
-			.get(
-				"https://api.themoviedb.org/3/movie/" +
-					parseInt(this.props.movie_id, 10),
-				{
-					params: {
-						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
-					},
-				}
-			)
-			.then((req) => {
-				console.log(req.data);
-            });
-        
+		console.log(this.props.movie);
         // getting actors
 		axios
 			.get(
 				"https://api.themoviedb.org/3/movie/" +
-					parseInt(this.props.movie_id, 10) +
+					parseInt(this.props.movie.id, 10) +
 					"/credits",
 				{
 					params: {
@@ -50,7 +35,7 @@ class Movie extends React.Component {
 }
 
 Movie.propTypes = {
-	movie_id: PropTypes.string.isRequired,
+	movie: PropTypes.object.isRequired,
 };
 
 export default Movie;

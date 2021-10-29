@@ -20,7 +20,7 @@ class Movies extends React.Component {
 			propsMovies: [],
 			movies: [],
 			showMovie: false,
-			movie_id: 0,
+			movie: "",
 		};
 		this.filterMovies = this.filterMovies.bind(this);
 	}
@@ -46,7 +46,7 @@ class Movies extends React.Component {
 		return (
 			<Stack spacing={4} alignItems="center">
 				{this.state.showMovie ? (
-					<Movie movie_id={this.state.movie_id}/>
+					<Movie movie={this.state.movie}/>
 				) : (
 						""
 				)}
@@ -59,7 +59,7 @@ class Movies extends React.Component {
 					{this.state.movies.map((movie) => (
 						<Grid item lg={4} sm={6} xs={12} key={movie.id}>
 							<Card sx={{ width: "auto", minHeight: 400 }}>
-								<CardActionArea onClick={() =>  this.setState({showMovie: true, movie_id: movie.id})}>
+								<CardActionArea onClick={() =>  this.setState({showMovie: true, movie: movie})}>
 									<CardMedia
 										component="img"
 										height="200"
