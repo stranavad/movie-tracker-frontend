@@ -60,7 +60,7 @@ class Movie extends React.Component {
 							{this.props.movie.photo ? (
 								<CardMedia
 									component="img"
-									sx={{ maxWidth: "500px" }}
+									sx={{ minWidth: "500px" }}
 									image={
 										"https://image.tmdb.org/t/p/w500/" +
 										this.props.movie.photo
@@ -70,7 +70,7 @@ class Movie extends React.Component {
 							) : (
 								<CardMedia
 									component="img"
-									sx={{ maxWidth: "500px" }}
+									sx={{ minWidth: "500px" }}
 									image={
 										"https://betravingknows.com/wp-content/uploads/2017/06/video-movie-placeholder-image-grey.png"
 									}
@@ -90,10 +90,67 @@ class Movie extends React.Component {
 									color="text.secondary"
 								>
 									{this.props.movie.year}
-									{this.props.movie.genres.map(genre => " - " + genre)}
+									{this.props.movie.genres.map(
+										(genre) => " - " + genre
+									)}
+								</Typography>
+								<Typography
+									variant="body1"
+									color="text.primary"
+								>
+									{this.props.movie.overview}
 								</Typography>
 							</CardContent>
 						</Stack>
+						{
+							//actors component
+						}
+						<Grid
+							container
+							spacing={2}
+							sx={{ width: "100%", paddingTop: 2 }}
+						>
+							<Grid item sm={6}>
+								<Typography variant="h6">
+									Random actor here
+								</Typography>
+								<Typography variant="body1">
+									Character: ""
+								</Typography>
+							</Grid>
+							<Grid item sm={6}>
+								<Typography variant="h6">
+									Random actor here
+								</Typography>
+								<Typography variant="body1">
+									Character: ""
+								</Typography>
+							</Grid>
+							<Grid item sm={6}>
+								<Typography variant="h6">
+									Random actor here
+								</Typography>
+								<Typography variant="body1">
+									Character: ""
+								</Typography>
+							</Grid>
+							<Grid item sm={6}>
+								<Typography variant="h6">
+									Random actor here
+								</Typography>
+								<Typography variant="body1">
+									Character: ""
+								</Typography>
+							</Grid>
+							<Grid item sm={6}>
+								<Typography variant="h6">
+									Random actor here
+								</Typography>
+								<Typography variant="body1">
+									Character: ""
+								</Typography>
+							</Grid>
+						</Grid>
 					</Card>
 				</Stack>
 			</Box>
