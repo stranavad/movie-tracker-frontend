@@ -2,17 +2,30 @@ import React from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 
+import Stack from "@mui/material/Stack";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import Box from "@mui/material/Box";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import { Button, CardActionArea } from "@mui/material";
+import Fab from "@mui/material/Fab";
+import CloseIcon from "@mui/icons-material/Close";
+import BackspaceIcon from "@mui/icons-material/Backspace";
+
 class Movie extends React.Component {
 	constructor(props) {
 		super(props);
-        this.state = {
-            actors: [],
-        };
+		this.state = {
+			actors: [],
+		};
 	}
 
 	componentDidMount() {
 		console.log(this.props.movie);
-        // getting actors
+		// getting actors
 		axios
 			.get(
 				"https://api.themoviedb.org/3/movie/" +
@@ -25,12 +38,66 @@ class Movie extends React.Component {
 				}
 			)
 			.then((req) => {
-                this.setState({ actors: req.data.cast });
+				this.setState({ actors: req.data.cast });
 			});
 	}
 
 	render() {
-		return <h1>Movie info component</h1>;
+		return (
+			<Box
+				sx={{
+					position: "fixed",
+					zIndex: 2,
+					backgroundColor: "white",
+					width: "100vw",
+					minHeight: "100vh",
+					top: "10vh",
+				}}
+			>
+				<Stack alignItems="center" width="100%">
+					<Card sx={{ maxWidth: "1100px", minHeight: 300 }}>
+						<Stack direction="row" spacing={2}>
+							{this.props.movie.photo ? (
+								<CardMedia
+									component="img"
+									sx={{ maxWidth: "500px" }}
+									image={
+										"https://image.tmdb.org/t/p/w500/" +
+										this.props.movie.photo
+									}
+									alt="Movie image isn't available"
+								/>
+							) : (
+								<CardMedia
+									component="img"
+									sx={{ maxWidth: "500px" }}
+									image={
+										"https://betravingknows.com/wp-content/uploads/2017/06/video-movie-placeholder-image-grey.png"
+									}
+									alt="Movie image isn't available"
+								/>
+							)}
+							<CardContent>
+								<Typography
+									variant="h4"
+									component="div"
+									className=""
+								>
+									{this.props.movie.title}
+								</Typography>
+								<Typography
+									variant="body2"
+									color="text.secondary"
+								>
+									{this.props.movie.year}
+									{this.props.movie.genres.map(genre => " - " + genre)}
+								</Typography>
+							</CardContent>
+						</Stack>
+					</Card>
+				</Stack>
+			</Box>
+		);
 	}
 }
 
