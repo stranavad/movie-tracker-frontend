@@ -39,7 +39,6 @@ class Movie extends React.Component {
 									component="img"
 									sx={{ minWidth: "500px" }}
 									image={
-										"https://image.tmdb.org/t/p/w500/" +
 										this.props.movie.photo
 									}
 									alt="Movie image isn't available"

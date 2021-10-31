@@ -64,12 +64,7 @@ class Movies extends React.Component {
 				actors = req.data.cast;
 			});
 		let newMovie = {
-			title: movie.title,
-			year: movie.year,
-			overview: movie.overview,
-			genres: movie.genres,
-			actors: actors,
-			photo: movie.photo,
+			...movie, actors
 		};
 		this.setState({ showInfo: true, movie: newMovie });
 	}

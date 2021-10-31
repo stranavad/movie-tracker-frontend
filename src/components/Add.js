@@ -71,14 +71,30 @@ class Add extends React.Component {
 							)
 						) {
 							let movie = data.data.results[i];
-							movie.genres = movie.genre_ids.map(
+							let newMovie = {};
+							newMovie.genres = movie.genre_ids.map(
 								(id) => this.state.genres[id]
 							);
-							movie.year = parseInt(
+							newMovie.year = parseInt(
 								movie.release_date.split("-")[0],
 								10
 							);
-							pushMovies.push(movie);
+							newMovie.overview = movie.overview;
+							newMovie.id = parseInt(movie.id, 10);
+							newMovie.title = movie.title;
+							newMovie.rating = parseInt(
+								parseFloat(movie.vote_average) * 10,
+								10
+							);
+							if (movie.backdrop_path) {
+								newMovie.photo =
+									"https://image.tmdb.org/t/p/w500/" +
+									movie.backdrop_path;
+							} else {
+								newMovie.photo = "";
+							}
+
+							pushMovies.push(newMovie);
 						}
 					}
 					this.setState({ movies: pushMovies });
@@ -135,23 +151,7 @@ class Add extends React.Component {
 	}
 
 	async showInfo(movie) {
-		let genres = [];
 		let actors = [];
-		await axios
-			.get(
-				"https://api.themoviedb.org/3/movie/" + parseInt(movie.id, 10),
-				{
-					params: {
-						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
-					},
-				}
-			)
-			.then((req) => {
-				for (let i = 0; i < req.data.genres.length; i++) {
-					genres.push(req.data.genres[i].name);
-				}
-			});
-
 		await axios
 			.get(
 				"https://api.themoviedb.org/3/movie/" +
@@ -166,36 +166,26 @@ class Add extends React.Component {
 			.then((req) => {
 				actors = req.data.cast;
 			});
-		let args = { genres: genres, actors: actors };
-		console.log(args);
 		let newMovie = {
-			title: movie.original_title,
-			year: parseInt(movie.release_date.split("-")[0], 10),
-			overview: movie.overview,
-			genres: genres,
-			actors: actors,
-			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
+			...movie, actors
 		};
 		this.setState({ showInfo: true, movie: newMovie });
 	}
 
 	addMovie(movie) {
+		// change user_id, movie_id, and id naming scheme
 		const params = {
-			id: this.props.user.uid,
-			title: movie.title,
-			movie_id: parseInt(movie.id, 10),
-			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
-			year: movie.year,
-			rating: parseInt(parseFloat(movie.vote_average) * 10, 10),
-			overview: movie.overview,
-			genres: movie.genres,
+			...movie
 		};
+		params.movie_id = movie.id;
+		params.id = this.props.user.uid;
 		console.log(params.genres);
 		axios.post("http://localhost:5000/user", params).then((data) => {
 			if (data.data.code === 112) {
 				// success alert
 				console.log("success alert");
 				// remove movie from list
+				// TODO: change to more efficient way
 				let newMovies = this.state.movies;
 				for (let i = 0; i < newMovies.length; i++) {
 					if (newMovies[i].id === movie.id) {
@@ -215,9 +205,6 @@ class Add extends React.Component {
 				});
 			}
 		});
-
-		// dont redirect
-		//this.props.history.push("/");
 	}
 
 	render() {
@@ -257,6 +244,7 @@ class Add extends React.Component {
 								label="Movie name"
 								variant="outlined"
 								value={this.state.movieName}
+								autofocus
 								onChange={(e) =>
 									this.setState({
 										[e.target.name]: e.target.value,
@@ -280,13 +268,12 @@ class Add extends React.Component {
 									<CardActionArea
 										onClick={() => this.addMovie(movie)}
 									>
-										{movie.backdrop_path ? (
+										{movie.photo ? (
 											<CardMedia
 												component="img"
 												height="200"
 												image={
-													"https://image.tmdb.org/t/p/w500/" +
-													movie.backdrop_path
+													movie.photo
 												}
 												alt="Movie image isn't available"
 											/>
