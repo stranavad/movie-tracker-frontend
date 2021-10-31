@@ -80,7 +80,7 @@ class Add extends React.Component {
 								10
 							);
 							newMovie.overview = movie.overview;
-							newMovie.id = parseInt(movie.id, 10);
+							newMovie.movie_id = parseInt(movie.id, 10);
 							newMovie.title = movie.title;
 							newMovie.rating = parseInt(
 								parseFloat(movie.vote_average) * 10,
@@ -115,7 +115,7 @@ class Add extends React.Component {
 		axios
 			.get("http://localhost:5000/user/moviesids", {
 				params: {
-					id: this.props.user.uid,
+					user_id: this.props.user.uid,
 				},
 			})
 			.then((data) => {
@@ -155,7 +155,7 @@ class Add extends React.Component {
 		await axios
 			.get(
 				"https://api.themoviedb.org/3/movie/" +
-					parseInt(movie.id, 10) +
+					parseInt(movie.movie_id, 10) +
 					"/credits",
 				{
 					params: {
@@ -177,8 +177,7 @@ class Add extends React.Component {
 		const params = {
 			...movie
 		};
-		params.movie_id = movie.id;
-		params.id = this.props.user.uid;
+		params.user_id = this.props.user.uid;
 		console.log(params.genres);
 		axios.post("http://localhost:5000/user", params).then((data) => {
 			if (data.data.code === 112) {
@@ -263,7 +262,7 @@ class Add extends React.Component {
 				) : (
 					<Grid container spacing={2} sx={{ maxWidth: 1200 }}>
 						{this.state.movies.map((movie) => (
-							<Grid item lg={4} sm={6} xs={12} key={movie.id}>
+							<Grid item lg={4} sm={6} xs={12} key={movie.movie_id}>
 								<Card sx={{ width: "auto", minHeight: 300 }}>
 									<CardActionArea
 										onClick={() => this.addMovie(movie)}

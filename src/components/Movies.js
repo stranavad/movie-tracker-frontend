@@ -52,7 +52,7 @@ class Movies extends React.Component {
 		await axios
 			.get(
 				"https://api.themoviedb.org/3/movie/" +
-					parseInt(movie.id, 10) +
+					parseInt(movie.movie_id, 10) +
 					"/credits",
 				{
 					params: {
@@ -87,7 +87,7 @@ class Movies extends React.Component {
 					sx={{ maxWidth: 1200, paddingTop: 3 }}
 				>
 					{this.state.movies.map((movie) => (
-						<Grid item lg={4} sm={6} xs={12} key={movie.id}>
+						<Grid item lg={4} sm={6} xs={12} key={movie.movie_id}>
 							<Card sx={{ width: "auto", minHeight: 400 }}>
 								<CardActionArea
 									onClick={() => this.showInfo(movie)}

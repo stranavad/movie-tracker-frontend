@@ -20,7 +20,7 @@ class Main extends Component {
 		axios
 			.delete("http://localhost:5000/user", {
 				params: {
-					id: this.props.user.uid,
+					user_id: this.props.user.uid,
 					movie_id: movie.movie_table_id,
 				},
 			})
@@ -43,7 +43,7 @@ class Main extends Component {
 		axios
 			.get("http://localhost:5000/user", {
 				params: {
-					id: this.props.user.uid,
+					user_id: this.props.user.uid,
 				},
 			})
 			.then((data) => {
@@ -52,7 +52,7 @@ class Main extends Component {
 					let moviesNew = [];
 					for (const property in data.data.movies) {
 						moviesNew.push({
-							id: property,
+							movie_id: property,
 							...data.data.movies[property],
 						});
 					}
