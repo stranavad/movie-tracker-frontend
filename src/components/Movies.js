@@ -117,6 +117,9 @@ class Movies extends React.Component {
 											color="text.secondary"
 										>
 											{movie.year}
+											{movie.genres.map(
+												(genre) => " - " + genre
+											)}
 										</Typography>
 									</CardContent>
 								</CardActionArea>
