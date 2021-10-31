@@ -3,28 +3,30 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import Movies from "./Movies";
 
-import Box from '@mui/material/Box';
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
+import Box from "@mui/material/Box";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
 
 class Main extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			movies: [],
+			genres: []
 		};
-  }
+	}
 
 	removeMovie = (movie) => {
-		axios.delete("http://localhost:5000/user",
-			{
+		axios
+			.delete("http://localhost:5000/user", {
 				params: {
 					id: this.props.user.uid,
 					movie_id: movie.movie_table_id,
-			}
-			}).then((data) => {
+				},
+			})
+			.then((data) => {
 				// error codes from backend
-				console.log(data.data.code)
+				console.log(data.data.code);
 				// removing movie from state
 				var newMovies = this.state.movies;
 				for (let i = 0; i < newMovies.length; i++) {
@@ -34,7 +36,7 @@ class Main extends Component {
 				}
 				this.setState({ movies: newMovies });
 				console.log(this.state.movies);
-		})
+			});
 	};
 
 	componentDidMount() {
@@ -56,8 +58,10 @@ class Main extends Component {
 					}
 					this.setState({ movies: moviesNew });
 				} else {
-					console.log("Backend error")
-					console.log("Error code" + data.data.code + " - " + data.data.errno)
+					console.log("Backend error");
+					console.log(
+						"Error code" + data.data.code + " - " + data.data.errno
+					);
 				}
 			})
 			.catch(function (error) {
@@ -70,6 +74,7 @@ class Main extends Component {
 			<div>
 				<Movies
 					movies={this.state.movies}
+					genres={this.state.genres}
 					deleteMovie={this.removeMovie}
 				/>
 				<Box sx={{ position: "fixed", right: 50, bottom: 50 }}>
@@ -89,4 +94,3 @@ Main.propTypes = {
 };
 
 export default Main;
-

@@ -142,6 +142,7 @@ class Movies extends React.Component {
 
 Movies.propTypes = {
 	movies: PropTypes.array,
+	genres: PropTypes.array,
 	deleteMovie: PropTypes.func.isRequired,
 };
 

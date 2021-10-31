@@ -15,9 +15,9 @@ import Fab from "@mui/material/Fab";
 import CloseIcon from "@mui/icons-material/Close";
 
 class Movie extends React.Component {
-	constructor(props) {
-		super(props);
-	}
+	//constructor(props) {
+		//super(props);
+	//}
 
 	render() {
 		return (

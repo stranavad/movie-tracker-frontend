@@ -20,7 +20,7 @@ import BackspaceIcon from "@mui/icons-material/Backspace";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
-import Movie from './Movie';
+import Movie from "./Movie";
 
 class Add extends React.Component {
 	constructor(props) {
@@ -39,7 +39,8 @@ class Add extends React.Component {
 			alertNoMoviesError: "No movies found with this name",
 			showInfo: false,
 			movie: {},
-			args: {}
+			args: {},
+			genres: [],
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
@@ -64,16 +65,23 @@ class Add extends React.Component {
 					let pushMovies = [];
 					for (let i = 0; i < data.data.results.length; i++) {
 						if (
+							// checking if movie is already in database
 							!this.state.moviesIds.includes(
 								data.data.results[i].id
 							)
 						) {
-							console.log("found movie" + data.data.results[i]);
-							pushMovies.push(data.data.results[i]);
+							let movie = data.data.results[i];
+							movie.genres = movie.genre_ids.map(
+								(id) => this.state.genres[id]
+							);
+							movie.year = parseInt(
+								movie.release_date.split("-")[0],
+								10
+							);
+							pushMovies.push(movie);
 						}
 					}
 					this.setState({ movies: pushMovies });
-					console.log(pushMovies);
 				} else {
 					console.log("showing warning");
 					this.setState({
@@ -104,6 +112,18 @@ class Add extends React.Component {
 					);
 				}
 			});
+
+		axios
+			.get("https://api.themoviedb.org/3/genre/movie/list", {
+				params: { api_key: "09d7e4ead1bd7096e0f4b6c56da951a8" },
+			})
+			.then((req) => {
+				let genres = {};
+				for (let i = 0; i < req.data.genres.length; i++) {
+					genres[req.data.genres[i].id] = req.data.genres[i].name;
+				}
+				this.setState({ genres: genres });
+			});
 	}
 
 	cleanSearch() {
@@ -111,7 +131,7 @@ class Add extends React.Component {
 	}
 
 	closeMovie() {
-		this.setState({movie: {}, showInfo: false, args: {}});
+		this.setState({ movie: {}, showInfo: false, args: {} });
 	}
 
 	async showInfo(movie) {
@@ -131,7 +151,7 @@ class Add extends React.Component {
 					genres.push(req.data.genres[i].name);
 				}
 			});
-		
+
 		await axios
 			.get(
 				"https://api.themoviedb.org/3/movie/" +
@@ -156,37 +176,19 @@ class Add extends React.Component {
 			actors: actors,
 			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
 		};
-		this.setState({ showInfo: true, movie: newMovie});
-		
+		this.setState({ showInfo: true, movie: newMovie });
 	}
 
-	async addMovie(movie) {
-		//get more data from tmdb
-		var genres = [];
-		await axios
-			.get(
-				"https://api.themoviedb.org/3/movie/" + parseInt(movie.id, 10),
-				{
-					params: {
-						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
-					},
-				}
-			)
-			.then((req) => {
-				for (let i = 0; i < req.data.genres.length; i++) {
-					genres.push(req.data.genres[i].name);
-				}
-			});
-		console.log(genres);
+	addMovie(movie) {
 		const params = {
 			id: this.props.user.uid,
 			title: movie.title,
 			movie_id: parseInt(movie.id, 10),
 			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
-			year: parseInt(movie.release_date.split("-")[0], 10),
+			year: movie.year,
 			rating: parseInt(parseFloat(movie.vote_average) * 10, 10),
 			overview: movie.overview,
-			genres: genres,
+			genres: movie.genres,
 		};
 		console.log(params.genres);
 		axios.post("http://localhost:5000/user", params).then((data) => {
@@ -227,8 +229,8 @@ class Add extends React.Component {
 						closeMovie={this.closeMovie}
 						args={this.state.args}
 					/>
-				): (
-						""
+				) : (
+					""
 				)}
 				{this.state.displayForm ? (
 					<Box
@@ -312,11 +314,18 @@ class Add extends React.Component {
 												color="text.secondary"
 											>
 												{movie.year}
+												{movie.genres.map(
+													(genre) => " - " + genre
+												)}
 											</Typography>
 										</CardContent>
 									</CardActionArea>
 									<CardActions>
-										<Button size="small" color="primary" onClick={() => this.showInfo(movie)}>
+										<Button
+											size="small"
+											color="primary"
+											onClick={() => this.showInfo(movie)}
+										>
 											Info
 										</Button>
 									</CardActions>
