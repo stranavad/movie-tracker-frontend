@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import axios from 'axios';
 //
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
@@ -19,10 +20,11 @@ class Movies extends React.Component {
 		this.state = {
 			propsMovies: [],
 			movies: [],
-			showMovie: false,
-			movie: "",
+			showInfo: false,
+			movie: {},
 		};
 		this.filterMovies = this.filterMovies.bind(this);
+		this.closeMovie = this.closeMovie.bind(this);
 	}
 
 	componentDidUpdate(prevProps) {
@@ -41,14 +43,42 @@ class Movies extends React.Component {
 		this.setState({ movies: newMovies });
 	}
 
+	closeMovie() {
+		this.setState({ showInfo: false, movie: {} });
+	}
+
+	async showInfo(movie) {
+		let actors = [];
+		await axios
+			.get(
+				"https://api.themoviedb.org/3/movie/" +
+					parseInt(movie.movie_id, 10) +
+					"/credits",
+				{
+					params: {
+						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
+					},
+				}
+			)
+			.then((req) => {
+				actors = req.data.cast;
+			});
+		let newMovie = {
+			...movie, actors
+		};
+		this.setState({ showInfo: true, movie: newMovie });
+	}
 
 	render() {
 		return (
 			<Stack spacing={4} alignItems="center">
-				{this.state.showMovie ? (
-					<Movie movie={this.state.movie}/>
+				{this.state.showInfo ? (
+					<Movie
+						movie={this.state.movie}
+						closeMovie={this.closeMovie}
+					/>
 				) : (
-						""
+					""
 				)}
 				<Search filterMovies={this.filterMovies} />
 				<Grid
@@ -57,9 +87,11 @@ class Movies extends React.Component {
 					sx={{ maxWidth: 1200, paddingTop: 3 }}
 				>
 					{this.state.movies.map((movie) => (
-						<Grid item lg={4} sm={6} xs={12} key={movie.id}>
+						<Grid item lg={4} sm={6} xs={12} key={movie.movie_id}>
 							<Card sx={{ width: "auto", minHeight: 400 }}>
-								<CardActionArea onClick={() =>  this.setState({showMovie: true, movie: movie})}>
+								<CardActionArea
+									onClick={() => this.showInfo(movie)}
+								>
 									<CardMedia
 										component="img"
 										height="200"
@@ -80,6 +112,9 @@ class Movies extends React.Component {
 											color="text.secondary"
 										>
 											{movie.year}
+											{movie.genres.map(
+												(genre) => " - " + genre
+											)}
 										</Typography>
 									</CardContent>
 								</CardActionArea>
@@ -105,6 +140,7 @@ class Movies extends React.Component {
 
 Movies.propTypes = {
 	movies: PropTypes.array,
+	genres: PropTypes.array,
 	deleteMovie: PropTypes.func.isRequired,
 };
 

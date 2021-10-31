@@ -9,6 +9,7 @@ import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
+import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import { Button, CardActionArea } from "@mui/material";
@@ -18,6 +19,8 @@ import BackspaceIcon from "@mui/icons-material/Backspace";
 // Alert components
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+
+import Movie from "./Movie";
 
 class Add extends React.Component {
 	constructor(props) {
@@ -34,10 +37,15 @@ class Add extends React.Component {
 			alertServerError:
 				"There was some error-5xx, try again in few minutes",
 			alertNoMoviesError: "No movies found with this name",
+			showInfo: false,
+			movie: {},
+			args: {},
+			genres: [],
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
 		this.cleanSearch = this.cleanSearch.bind(this);
+		this.closeMovie = this.closeMovie.bind(this);
 	}
 
 	onSubmit(e) {
@@ -57,23 +65,46 @@ class Add extends React.Component {
 					let pushMovies = [];
 					for (let i = 0; i < data.data.results.length; i++) {
 						if (
+							// checking if movie is already in database
 							!this.state.moviesIds.includes(
 								data.data.results[i].id
 							)
 						) {
-							console.log("found movie" + data.data.results[i]);
-							pushMovies.push(data.data.results[i]);
+							let movie = data.data.results[i];
+							let newMovie = {};
+							newMovie.genres = movie.genre_ids.map(
+								(id) => this.state.genres[id]
+							);
+							newMovie.year = parseInt(
+								movie.release_date.split("-")[0],
+								10
+							);
+							newMovie.overview = movie.overview;
+							newMovie.movie_id = parseInt(movie.id, 10);
+							newMovie.title = movie.title;
+							newMovie.rating = parseInt(
+								parseFloat(movie.vote_average) * 10,
+								10
+							);
+							if (movie.backdrop_path) {
+								newMovie.photo =
+									"https://image.tmdb.org/t/p/w500/" +
+									movie.backdrop_path;
+							} else {
+								newMovie.photo = "";
+							}
+
+							pushMovies.push(newMovie);
 						}
 					}
 					this.setState({ movies: pushMovies });
-					console.log(pushMovies);
 				} else {
 					console.log("showing warning");
 					this.setState({
 						showAlert: true,
 						alertSeverity: "error",
 						alertText: this.state.alertNoMoviesError,
-						displayForm: true
+						displayForm: true,
 					});
 				}
 			});
@@ -84,7 +115,7 @@ class Add extends React.Component {
 		axios
 			.get("http://localhost:5000/user/moviesids", {
 				params: {
-					id: this.props.user.uid,
+					user_id: this.props.user.uid,
 				},
 			})
 			.then((data) => {
@@ -97,19 +128,35 @@ class Add extends React.Component {
 					);
 				}
 			});
+
+		axios
+			.get("https://api.themoviedb.org/3/genre/movie/list", {
+				params: { api_key: "09d7e4ead1bd7096e0f4b6c56da951a8" },
+			})
+			.then((req) => {
+				let genres = {};
+				for (let i = 0; i < req.data.genres.length; i++) {
+					genres[req.data.genres[i].id] = req.data.genres[i].name;
+				}
+				this.setState({ genres: genres });
+			});
 	}
 
 	cleanSearch() {
-		this.setState({movies: [], movieName: "", displayForm: true})
+		this.setState({ movies: [], movieName: "", displayForm: true });
 	}
 
-	async addMovie(movie){
-		//get more data from tmdb
-		var genres = [];
+	closeMovie() {
+		this.setState({ movie: {}, showInfo: false, args: {} });
+	}
+
+	async showInfo(movie) {
+		let actors = [];
 		await axios
 			.get(
 				"https://api.themoviedb.org/3/movie/" +
-					parseInt(movie.id, 10),
+					parseInt(movie.movie_id, 10) +
+					"/credits",
 				{
 					params: {
 						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
@@ -117,27 +164,27 @@ class Add extends React.Component {
 				}
 			)
 			.then((req) => {
-				for (let i = 0; i < req.data.genres.length; i++){
-					genres.push(req.data.genres[i].name);
-				}
+				actors = req.data.cast;
 			});
-		console.log(genres);
-		const params = {
-			id: this.props.user.uid,
-			title: movie.title,
-			movie_id: parseInt(movie.id, 10),
-			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
-			year: parseInt(movie.release_date.split("-")[0], 10),
-			rating: parseInt(parseFloat(movie.vote_average) * 10, 10),
-			overview: movie.overview,
-			genres: genres
+		let newMovie = {
+			...movie, actors
 		};
+		this.setState({ showInfo: true, movie: newMovie });
+	}
+
+	addMovie(movie) {
+		// change user_id, movie_id, and id naming scheme
+		const params = {
+			...movie
+		};
+		params.user_id = this.props.user.uid;
 		console.log(params.genres);
 		axios.post("http://localhost:5000/user", params).then((data) => {
 			if (data.data.code === 112) {
 				// success alert
 				console.log("success alert");
 				// remove movie from list
+				// TODO: change to more efficient way
 				let newMovies = this.state.movies;
 				for (let i = 0; i < newMovies.length; i++) {
 					if (newMovies[i].id === movie.id) {
@@ -157,14 +204,20 @@ class Add extends React.Component {
 				});
 			}
 		});
-
-		// dont redirect
-		//this.props.history.push("/");
 	}
 
 	render() {
 		return (
 			<Stack spacing={4} alignItems="center" pt={5}>
+				{this.state.showInfo ? (
+					<Movie
+						movie={this.state.movie}
+						closeMovie={this.closeMovie}
+						args={this.state.args}
+					/>
+				) : (
+					""
+				)}
 				{this.state.displayForm ? (
 					<Box
 						sx={{
@@ -190,6 +243,7 @@ class Add extends React.Component {
 								label="Movie name"
 								variant="outlined"
 								value={this.state.movieName}
+								autoFocus
 								onChange={(e) =>
 									this.setState({
 										[e.target.name]: e.target.value,
@@ -208,18 +262,17 @@ class Add extends React.Component {
 				) : (
 					<Grid container spacing={2} sx={{ maxWidth: 1200 }}>
 						{this.state.movies.map((movie) => (
-							<Grid item lg={4} sm={6} xs={12} key={movie.id}>
+							<Grid item lg={4} sm={6} xs={12} key={movie.movie_id}>
 								<Card sx={{ width: "auto", minHeight: 300 }}>
 									<CardActionArea
 										onClick={() => this.addMovie(movie)}
 									>
-										{movie.backdrop_path ? (
+										{movie.photo ? (
 											<CardMedia
 												component="img"
 												height="200"
 												image={
-													"https://image.tmdb.org/t/p/w500/" +
-													movie.backdrop_path
+													movie.photo
 												}
 												alt="Movie image isn't available"
 											/>
@@ -247,9 +300,21 @@ class Add extends React.Component {
 												color="text.secondary"
 											>
 												{movie.year}
+												{movie.genres.map(
+													(genre) => " - " + genre
+												)}
 											</Typography>
 										</CardContent>
 									</CardActionArea>
+									<CardActions>
+										<Button
+											size="small"
+											color="primary"
+											onClick={() => this.showInfo(movie)}
+										>
+											Info
+										</Button>
+									</CardActions>
 								</Card>
 							</Grid>
 						))}
@@ -273,7 +338,7 @@ class Add extends React.Component {
 				</Snackbar>
 				<Box sx={{ position: "fixed", right: 50, bottom: 50 }}>
 					<a href="/">
-						<Fab color="primary" aria-label="add">
+						<Fab color="primary" aria-label="Close">
 							<CloseIcon />
 						</Fab>
 					</a>
@@ -281,7 +346,7 @@ class Add extends React.Component {
 				<Box sx={{ position: "fixed", right: 50, bottom: 120 }}>
 					<Fab
 						color="primary"
-						aria-label="add"
+						aria-label="Clear"
 						onClick={this.cleanSearch}
 					>
 						<BackspaceIcon />

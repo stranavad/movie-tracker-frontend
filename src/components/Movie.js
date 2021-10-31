@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
@@ -9,44 +8,22 @@ import Box from "@mui/material/Box";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import { Button, CardActionArea } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Link from "@mui/material/Link";
+
 import Fab from "@mui/material/Fab";
 import CloseIcon from "@mui/icons-material/Close";
-import BackspaceIcon from "@mui/icons-material/Backspace";
 
 class Movie extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			actors: [],
-		};
-	}
-
-	componentDidMount() {
-		console.log(this.props.movie);
-		// getting actors
-		axios
-			.get(
-				"https://api.themoviedb.org/3/movie/" +
-					parseInt(this.props.movie.id, 10) +
-					"/credits",
-				{
-					params: {
-						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
-					},
-				}
-			)
-			.then((req) => {
-				this.setState({ actors: req.data.cast });
-			});
-	}
+	//constructor(props) {
+		//super(props);
+	//}
 
 	render() {
 		return (
 			<Box
 				sx={{
-					position: "fixed",
+					position: "absolute",
 					zIndex: 2,
 					backgroundColor: "white",
 					width: "100vw",
@@ -60,9 +37,8 @@ class Movie extends React.Component {
 							{this.props.movie.photo ? (
 								<CardMedia
 									component="img"
-									sx={{ maxWidth: "500px" }}
+									sx={{ minWidth: "500px" }}
 									image={
-										"https://image.tmdb.org/t/p/w500/" +
 										this.props.movie.photo
 									}
 									alt="Movie image isn't available"
@@ -70,7 +46,7 @@ class Movie extends React.Component {
 							) : (
 								<CardMedia
 									component="img"
-									sx={{ maxWidth: "500px" }}
+									sx={{ minWidth: "500px" }}
 									image={
 										"https://betravingknows.com/wp-content/uploads/2017/06/video-movie-placeholder-image-grey.png"
 									}
@@ -90,12 +66,72 @@ class Movie extends React.Component {
 									color="text.secondary"
 								>
 									{this.props.movie.year}
-									{this.props.movie.genres.map(genre => " - " + genre)}
+									{this.props.movie.genres.map(
+										(genre) => " - " + genre
+									)}
+								</Typography>
+								<Typography
+									variant="body1"
+									color="text.primary"
+								>
+									{this.props.movie.overview}
 								</Typography>
 							</CardContent>
 						</Stack>
+						{
+							//actors component
+						}
+						<Grid
+							container
+							spacing={4}
+							sx={{ width: "100%", paddingTop: 2 }}
+						>
+							{this.props.movie.actors.map((actor) => (
+								<Grid item sm={6} key={actor.credit_id}>
+									<Stack direction="row" spacing={1}>
+										<Link
+											href={
+												"https://image.tmdb.org/t/p/w500" +
+												actor.profile_path
+											}
+											target="_blank"
+											rel="noopener"
+										>
+											<Avatar
+												alt={actor.name}
+												sx={{
+													height: 60,
+													width: 60,
+												}}
+												src={
+													"https://image.tmdb.org/t/p/w500" +
+													actor.profile_path
+												}
+											/>
+										</Link>
+										<Stack direction="column" spacing={0}>
+											<Typography variant="h6">
+												{actor.name}
+											</Typography>
+											<Typography variant="body1">
+												{actor.character}
+											</Typography>
+										</Stack>
+									</Stack>
+								</Grid>
+							))}
+						</Grid>
 					</Card>
 				</Stack>
+				<Box sx={{ position: "fixed", right: 50, bottom: 50 }}>
+					<Fab
+						color="primary"
+						aria-label="close"
+						onClick={this.props.closeMovie}
+					>
+						<CloseIcon />
+					</Fab>
+				</Box>
 			</Box>
 		);
 	}
@@ -103,6 +139,7 @@ class Movie extends React.Component {
 
 Movie.propTypes = {
 	movie: PropTypes.object.isRequired,
+	closeMovie: PropTypes.func.isRequired,
 };
 
 export default Movie;
