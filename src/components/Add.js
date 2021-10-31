@@ -244,7 +244,7 @@ class Add extends React.Component {
 								label="Movie name"
 								variant="outlined"
 								value={this.state.movieName}
-								autofocus
+								autoFocus
 								onChange={(e) =>
 									this.setState({
 										[e.target.name]: e.target.value,
