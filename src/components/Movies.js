@@ -53,6 +53,7 @@ class Movies extends React.Component {
 					<Movie
 						movie={this.state.movie}
 						closeMovie={this.closeMovie}
+						args={{genres: "none"}}
 					/>
 				) : (
 					""

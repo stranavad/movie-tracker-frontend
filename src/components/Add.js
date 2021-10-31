@@ -9,6 +9,7 @@ import Card from "@mui/material/Card";
 import Box from "@mui/material/Box";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
+import CardActions from "@mui/material/CardActions";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import { Button, CardActionArea } from "@mui/material";
@@ -18,6 +19,8 @@ import BackspaceIcon from "@mui/icons-material/Backspace";
 // Alert components
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+
+import Movie from './Movie';
 
 class Add extends React.Component {
 	constructor(props) {
@@ -34,10 +37,14 @@ class Add extends React.Component {
 			alertServerError:
 				"There was some error-5xx, try again in few minutes",
 			alertNoMoviesError: "No movies found with this name",
+			showInfo: false,
+			movie: {},
+			args: {}
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.addMovie = this.addMovie.bind(this);
 		this.cleanSearch = this.cleanSearch.bind(this);
+		this.closeMovie = this.closeMovie.bind(this);
 	}
 
 	onSubmit(e) {
@@ -73,7 +80,7 @@ class Add extends React.Component {
 						showAlert: true,
 						alertSeverity: "error",
 						alertText: this.state.alertNoMoviesError,
-						displayForm: true
+						displayForm: true,
 					});
 				}
 			});
@@ -100,17 +107,19 @@ class Add extends React.Component {
 	}
 
 	cleanSearch() {
-		this.setState({movies: [], movieName: "", displayForm: true})
+		this.setState({ movies: [], movieName: "", displayForm: true });
 	}
 
+	closeMovie() {
+		this.setState({movie: {}, showInfo: false, args: {}});
+	}
 
-	async addMovie(movie){
-		//get more data from tmdb
-		var genres = [];
+	async showInfo(movie) {
+		let genres = [];
+		let actors = [];
 		await axios
 			.get(
-				"https://api.themoviedb.org/3/movie/" +
-					parseInt(movie.id, 10),
+				"https://api.themoviedb.org/3/movie/" + parseInt(movie.id, 10),
 				{
 					params: {
 						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
@@ -118,7 +127,45 @@ class Add extends React.Component {
 				}
 			)
 			.then((req) => {
-				for (let i = 0; i < req.data.genres.length; i++){
+				for (let i = 0; i < req.data.genres.length; i++) {
+					genres.push(req.data.genres[i].name);
+				}
+			});
+		
+		await axios
+			.get(
+				"https://api.themoviedb.org/3/movie/" +
+					parseInt(movie.id, 10) +
+					"/credits",
+				{
+					params: {
+						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
+					},
+				}
+			)
+			.then((req) => {
+				actors = req.data.cast;
+			});
+		let args = { genres: genres, actors: actors };
+		console.log(args);
+		this.setState({ showInfo: true, movie: movie, args: args});
+		
+	}
+
+	async addMovie(movie) {
+		//get more data from tmdb
+		var genres = [];
+		await axios
+			.get(
+				"https://api.themoviedb.org/3/movie/" + parseInt(movie.id, 10),
+				{
+					params: {
+						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
+					},
+				}
+			)
+			.then((req) => {
+				for (let i = 0; i < req.data.genres.length; i++) {
 					genres.push(req.data.genres[i].name);
 				}
 			});
@@ -131,7 +178,7 @@ class Add extends React.Component {
 			year: parseInt(movie.release_date.split("-")[0], 10),
 			rating: parseInt(parseFloat(movie.vote_average) * 10, 10),
 			overview: movie.overview,
-			genres: genres
+			genres: genres,
 		};
 		console.log(params.genres);
 		axios.post("http://localhost:5000/user", params).then((data) => {
@@ -166,6 +213,15 @@ class Add extends React.Component {
 	render() {
 		return (
 			<Stack spacing={4} alignItems="center" pt={5}>
+				{this.state.showInfo ? (
+					<Movie
+						movie={this.state.movie}
+						closeMovie={this.closeMovie}
+						args={this.state.args}
+					/>
+				): (
+						""
+				)}
 				{this.state.displayForm ? (
 					<Box
 						sx={{
@@ -251,6 +307,11 @@ class Add extends React.Component {
 											</Typography>
 										</CardContent>
 									</CardActionArea>
+									<CardActions>
+										<Button size="small" color="primary" onClick={() => this.showInfo(movie)}>
+											Info
+										</Button>
+									</CardActions>
 								</Card>
 							</Grid>
 						))}
