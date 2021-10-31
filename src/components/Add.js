@@ -148,7 +148,15 @@ class Add extends React.Component {
 			});
 		let args = { genres: genres, actors: actors };
 		console.log(args);
-		this.setState({ showInfo: true, movie: movie, args: args});
+		let newMovie = {
+			title: movie.original_title,
+			year: parseInt(movie.release_date.split("-")[0], 10),
+			overview: movie.overview,
+			genres: genres,
+			actors: actors,
+			photo: "https://image.tmdb.org/t/p/w500/" + movie.backdrop_path,
+		};
+		this.setState({ showInfo: true, movie: newMovie});
 		
 	}
 

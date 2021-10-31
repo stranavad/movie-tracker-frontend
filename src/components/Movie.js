@@ -25,49 +25,12 @@ class Movie extends React.Component {
 		this.onClose = this.onClose.bind(this);
 	}
 
-	componentDidMount() {
-		console.log(this.props.movie);
-		this.setState({ movie: this.props.movie });
-		console.log("args" + this.props.args);
-		console.log(typeof this.props.args);
-		if (this.props.args.genres === "none") {
-			// getting actors
-			axios
-				.get(
-					"https://api.themoviedb.org/3/movie/" +
-						parseInt(this.props.movie.id, 10) +
-						"/credits",
-					{
-						params: {
-							api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
-						},
-					}
-				)
-				.then((req) => {
-					this.setState({ actors: req.data.cast });
-					console.log(req.data.cast);
-				});
-		} else {
-			//Data processing when component loads from add.js
-			console.log("in else");
-			this.setState({ actors: this.props.args.actors });
-			let newMovie = this.props.movie;
-			newMovie["genres"] = this.props.args.genres;
-			newMovie["photo"] = this.props.movie.backdrop_path;
-			newMovie["year"] = parseInt(this.props.movie.release_date.split("-")[0], 10);
-			newMovie["title"] = this.props.movie.original_title;
-			this.setState({ movie: newMovie });
-			console.log(newMovie);
-		}
-	}
-
 	onClose() {
 		this.setState({ actors: [] });
 		this.props.closeMovie();
 	}
 
 	render() {
-		console.log(this.state.actors);
 		return (
 			<Box
 				sx={{
@@ -82,13 +45,13 @@ class Movie extends React.Component {
 				<Stack alignItems="center" width="100%">
 					<Card sx={{ maxWidth: "1100px", minHeight: 300 }}>
 						<Stack direction="row" spacing={2}>
-							{this.state.movie.photo ? (
+							{this.props.movie.photo ? (
 								<CardMedia
 									component="img"
 									sx={{ minWidth: "500px" }}
 									image={
 										"https://image.tmdb.org/t/p/w500/" +
-										this.state.movie.photo
+										this.props.movie.photo
 									}
 									alt="Movie image isn't available"
 								/>
@@ -108,14 +71,14 @@ class Movie extends React.Component {
 									component="div"
 									className=""
 								>
-									{this.state.movie.title}
+									{this.props.movie.title}
 								</Typography>
 								<Typography
 									variant="body2"
 									color="text.secondary"
 								>
-									{this.state.movie.year}
-									{this.props.args.genres.map(
+									{this.props.movie.year}
+									{this.props.movie.genres.map(
 										(genre) => " - " + genre
 									)}
 								</Typography>
@@ -123,7 +86,7 @@ class Movie extends React.Component {
 									variant="body1"
 									color="text.primary"
 								>
-									{this.state.movie.overview}
+									{this.props.movie.overview}
 								</Typography>
 							</CardContent>
 						</Stack>
@@ -135,7 +98,7 @@ class Movie extends React.Component {
 							spacing={4}
 							sx={{ width: "100%", paddingTop: 2 }}
 						>
-							{this.props.args.actors.map((actor) => (
+							{this.props.movie.actors.map((actor) => (
 								<Grid item sm={6} key={actor.credit_id}>
 									<Stack direction="row" spacing={1}>
 										<Link
@@ -189,7 +152,6 @@ class Movie extends React.Component {
 Movie.propTypes = {
 	movie: PropTypes.object.isRequired,
 	closeMovie: PropTypes.func.isRequired,
-	args: PropTypes.object,
 };
 
 export default Movie;
