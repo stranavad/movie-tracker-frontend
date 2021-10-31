@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
 
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
@@ -18,16 +17,6 @@ import CloseIcon from "@mui/icons-material/Close";
 class Movie extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			movie: {},
-			actors: [],
-		};
-		this.onClose = this.onClose.bind(this);
-	}
-
-	onClose() {
-		this.setState({ actors: [] });
-		this.props.closeMovie();
 	}
 
 	render() {
@@ -121,7 +110,7 @@ class Movie extends React.Component {
 												}
 											/>
 										</Link>
-										<Stack direction="column" spacing={1}>
+										<Stack direction="column" spacing={0}>
 											<Typography variant="h6">
 												{actor.name}
 											</Typography>
@@ -139,7 +128,7 @@ class Movie extends React.Component {
 					<Fab
 						color="primary"
 						aria-label="close"
-						onClick={this.onClose}
+						onClick={this.props.closeMovie}
 					>
 						<CloseIcon />
 					</Fab>

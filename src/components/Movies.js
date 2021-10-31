@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import axios from 'axios';
 //
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
@@ -19,7 +20,7 @@ class Movies extends React.Component {
 		this.state = {
 			propsMovies: [],
 			movies: [],
-			showMovie: false,
+			showInfo: false,
 			movie: {},
 		};
 		this.filterMovies = this.filterMovies.bind(this);
@@ -43,17 +44,43 @@ class Movies extends React.Component {
 	}
 
 	closeMovie() {
-		this.setState({showMovie: false, movie: {}});
+		this.setState({ showInfo: false, movie: {} });
+	}
+
+	async showInfo(movie) {
+		let actors = [];
+		await axios
+			.get(
+				"https://api.themoviedb.org/3/movie/" +
+					parseInt(movie.id, 10) +
+					"/credits",
+				{
+					params: {
+						api_key: "09d7e4ead1bd7096e0f4b6c56da951a8",
+					},
+				}
+			)
+			.then((req) => {
+				actors = req.data.cast;
+			});
+		let newMovie = {
+			title: movie.title,
+			year: movie.year,
+			overview: movie.overview,
+			genres: movie.genres,
+			actors: actors,
+			photo: movie.photo,
+		};
+		this.setState({ showInfo: true, movie: newMovie });
 	}
 
 	render() {
 		return (
 			<Stack spacing={4} alignItems="center">
-				{this.state.showMovie ? (
+				{this.state.showInfo ? (
 					<Movie
 						movie={this.state.movie}
 						closeMovie={this.closeMovie}
-						args={{genres: "none"}}
 					/>
 				) : (
 					""
@@ -68,12 +95,7 @@ class Movies extends React.Component {
 						<Grid item lg={4} sm={6} xs={12} key={movie.id}>
 							<Card sx={{ width: "auto", minHeight: 400 }}>
 								<CardActionArea
-									onClick={() =>
-										this.setState({
-											showMovie: true,
-											movie: movie,
-										})
-									}
+									onClick={() => this.showInfo(movie)}
 								>
 									<CardMedia
 										component="img"
