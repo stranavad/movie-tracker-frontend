@@ -20,9 +20,10 @@ class Movies extends React.Component {
 			propsMovies: [],
 			movies: [],
 			showMovie: false,
-			movie: "",
+			movie: {},
 		};
 		this.filterMovies = this.filterMovies.bind(this);
+		this.closeMovie = this.closeMovie.bind(this);
 	}
 
 	componentDidUpdate(prevProps) {
@@ -41,14 +42,20 @@ class Movies extends React.Component {
 		this.setState({ movies: newMovies });
 	}
 
+	closeMovie() {
+		this.setState({showMovie: false, movie: {}});
+	}
 
 	render() {
 		return (
 			<Stack spacing={4} alignItems="center">
 				{this.state.showMovie ? (
-					<Movie movie={this.state.movie}/>
+					<Movie
+						movie={this.state.movie}
+						closeMovie={this.closeMovie}
+					/>
 				) : (
-						""
+					""
 				)}
 				<Search filterMovies={this.filterMovies} />
 				<Grid
@@ -59,7 +66,14 @@ class Movies extends React.Component {
 					{this.state.movies.map((movie) => (
 						<Grid item lg={4} sm={6} xs={12} key={movie.id}>
 							<Card sx={{ width: "auto", minHeight: 400 }}>
-								<CardActionArea onClick={() =>  this.setState({showMovie: true, movie: movie})}>
+								<CardActionArea
+									onClick={() =>
+										this.setState({
+											showMovie: true,
+											movie: movie,
+										})
+									}
+								>
 									<CardMedia
 										component="img"
 										height="200"

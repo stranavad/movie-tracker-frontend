@@ -10,12 +10,10 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import Avatar from "@mui/material/Avatar";
-import Link from '@mui/material/Link';
-import TextField from "@mui/material/TextField";
-import { Button, CardActionArea } from "@mui/material";
+import Link from "@mui/material/Link";
+
 import Fab from "@mui/material/Fab";
 import CloseIcon from "@mui/icons-material/Close";
-import BackspaceIcon from "@mui/icons-material/Backspace";
 
 class Movie extends React.Component {
 	constructor(props) {
@@ -23,6 +21,7 @@ class Movie extends React.Component {
 		this.state = {
 			actors: [],
 		};
+		this.onClose = this.onClose.bind(this);
 	}
 
 	componentDidMount() {
@@ -43,6 +42,11 @@ class Movie extends React.Component {
 				this.setState({ actors: req.data.cast });
 				console.log(req.data.cast);
 			});
+	}
+
+	onClose() {
+		this.setState({ actors: [] });
+		this.props.closeMovie();
 	}
 
 	render() {
@@ -151,6 +155,15 @@ class Movie extends React.Component {
 						</Grid>
 					</Card>
 				</Stack>
+				<Box sx={{ position: "fixed", right: 50, bottom: 50 }}>
+					<Fab
+						color="primary"
+						aria-label="close"
+						onClick={this.onClose}
+					>
+						<CloseIcon />
+					</Fab>
+				</Box>
 			</Box>
 		);
 	}
@@ -158,6 +171,7 @@ class Movie extends React.Component {
 
 Movie.propTypes = {
 	movie: PropTypes.object.isRequired,
+	closeMovie: PropTypes.func.isRequired,
 };
 
 export default Movie;

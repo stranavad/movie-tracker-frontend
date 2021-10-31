@@ -103,6 +103,7 @@ class Add extends React.Component {
 		this.setState({movies: [], movieName: "", displayForm: true})
 	}
 
+
 	async addMovie(movie){
 		//get more data from tmdb
 		var genres = [];
@@ -273,7 +274,7 @@ class Add extends React.Component {
 				</Snackbar>
 				<Box sx={{ position: "fixed", right: 50, bottom: 50 }}>
 					<a href="/">
-						<Fab color="primary" aria-label="add">
+						<Fab color="primary" aria-label="Close">
 							<CloseIcon />
 						</Fab>
 					</a>
@@ -281,7 +282,7 @@ class Add extends React.Component {
 				<Box sx={{ position: "fixed", right: 50, bottom: 120 }}>
 					<Fab
 						color="primary"
-						aria-label="add"
+						aria-label="Clear"
 						onClick={this.cleanSearch}
 					>
 						<BackspaceIcon />
