@@ -9,6 +9,8 @@ import Box from "@mui/material/Box";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import Link from '@mui/material/Link';
 import TextField from "@mui/material/TextField";
 import { Button, CardActionArea } from "@mui/material";
 import Fab from "@mui/material/Fab";
@@ -39,14 +41,16 @@ class Movie extends React.Component {
 			)
 			.then((req) => {
 				this.setState({ actors: req.data.cast });
+				console.log(req.data.cast);
 			});
 	}
 
 	render() {
+		console.log(this.state.actors);
 		return (
 			<Box
 				sx={{
-					position: "fixed",
+					position: "absolute",
 					zIndex: 2,
 					backgroundColor: "white",
 					width: "100vw",
@@ -107,49 +111,43 @@ class Movie extends React.Component {
 						}
 						<Grid
 							container
-							spacing={2}
+							spacing={4}
 							sx={{ width: "100%", paddingTop: 2 }}
 						>
-							<Grid item sm={6}>
-								<Typography variant="h6">
-									Random actor here
-								</Typography>
-								<Typography variant="body1">
-									Character: ""
-								</Typography>
-							</Grid>
-							<Grid item sm={6}>
-								<Typography variant="h6">
-									Random actor here
-								</Typography>
-								<Typography variant="body1">
-									Character: ""
-								</Typography>
-							</Grid>
-							<Grid item sm={6}>
-								<Typography variant="h6">
-									Random actor here
-								</Typography>
-								<Typography variant="body1">
-									Character: ""
-								</Typography>
-							</Grid>
-							<Grid item sm={6}>
-								<Typography variant="h6">
-									Random actor here
-								</Typography>
-								<Typography variant="body1">
-									Character: ""
-								</Typography>
-							</Grid>
-							<Grid item sm={6}>
-								<Typography variant="h6">
-									Random actor here
-								</Typography>
-								<Typography variant="body1">
-									Character: ""
-								</Typography>
-							</Grid>
+							{this.state.actors.map((actor) => (
+								<Grid item sm={6} key={actor.credit_id}>
+									<Stack direction="row" spacing={1}>
+										<Link
+											href={
+												"https://image.tmdb.org/t/p/w500" +
+												actor.profile_path
+											}
+											target="_blank"
+											rel="noopener"
+										>
+											<Avatar
+												alt={actor.name}
+												sx={{
+													height: 60,
+													width: 60,
+												}}
+												src={
+													"https://image.tmdb.org/t/p/w500" +
+													actor.profile_path
+												}
+											/>
+										</Link>
+										<Stack direction="column" spacing={1}>
+											<Typography variant="h6">
+												{actor.name}
+											</Typography>
+											<Typography variant="body1">
+												{actor.character}
+											</Typography>
+										</Stack>
+									</Stack>
+								</Grid>
+							))}
 						</Grid>
 					</Card>
 				</Stack>
